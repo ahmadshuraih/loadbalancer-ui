@@ -1,20 +1,28 @@
 {
   "name": "loadbalancer",
   "version": "0.1.0",
+  "description": "A simple UI to manage and configure the loadbalancer",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 8080",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/crypto-js": "^4.1.1",
+    "axios": "^1.2.1",
     "core-js": "^3.8.3",
+    "crypto-js": "^4.1.1",
+    "devtools-detect": "^4.0.1",
     "vue": "^2.6.14",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
-    "vue-router": "^3.5.1"
+    "vue-router": "^3.5.1",
+    "vue-simple-alert": "^1.1.1"
   },
   "devDependencies": {
+    "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

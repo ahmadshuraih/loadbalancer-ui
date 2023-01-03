@@ -1,0 +1,14 @@
+export type AddressBookResponse = { [tenantId: string]: TenantAddressResponse; };
+export type AddressBook = { [tenantId: string]: TenantAddress; };
+export type TenantAddressResponse = { tenantId: string; serverProtocol: string; serverName: string; serverPort: number; ramReserved: number; error?: string; };
+export type TenantAddress = { tenantId: string; serverProtocol: string; serverName: string; serverPort: number; ramReserved: number; };
+export type DynamicTenant = { tenantId: string; ramReserved: number; };
+export type ServersResponse = { [serverAddress: string]: ServerResponse; };
+export type Servers = { [serverAddress: string]: Server; };
+export type ServerResponse = { protocol: string; name: string; port: number; ramCapacity: number; availableRAM: number; totalAssignedTenants: number; error?: string; error?: string; };
+export type Server = { protocol: string; name: string; port: number; ramCapacity: number; availableRAM: number; totalAssignedTenants: number; error?: string; };
+export type IndexedServer = { protocol: string; name: string; port: number; ramCapacity: number; availableRAM: number; totalAssignedTenants: number; index: string; };
+export type LBResponse = { succeed: boolean; message?: string; error?: string; errorId?: string; };
+export type AuthTokens = { "fdUasd7jsdy/&9sddsaj_asdsd": string; "34as@vsdas6y/&9asd/32h^sdGJ": string; "ry*as-sdy/&9aswd/32sddv": string }; // authenticationToken, authorizationToken, key
+export type LoginResponse = { succeed: boolean; message?: string; error?: string; errorId?: string, auth?: AuthTokens; }
+export type SecurityInfo = { username: string; password: string; authenticationToken: string; authorizationToken: string; };

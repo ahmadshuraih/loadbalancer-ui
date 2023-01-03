@@ -1,0 +1,368 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+
+label,
+h1,
+h2,
+h3,
+h4,
+h5,
+i,
+button,
+span,
+nav,
+img,
+td,
+th,
+br,
+div {
+  -webkit-user-select: none !important;
+  /* Safari */
+  -ms-user-select: none !important;
+  /* IE 10 and IE 11 */
+  user-select: none !important;
+  /* Standard syntax */
+}
+
+input[type=text]:disabled, img {
+  pointer-events: none;
+}
+
+/* Views with tables styling */
+.add-button {
+  font-size: 24px;
+  color: #ed1c24;
+  border-radius: 90px;
+  background: white;
+  padding: 0px 8px 0px 8px;
+  float: right;
+  margin: 5px 6px 0px 0px;
+  cursor: pointer;
+  border: 1px solid #ed1c24;
+}
+
+.add-button:hover {
+  opacity: 0.6;
+}
+
+.panel-label {
+  float: left;
+  color: black;
+  margin: 12px 5px 0px 10px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.panel-div {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  width: 100%;
+  height: 40px;
+  background: rgb(255, 207, 207);
+  position: sticky;
+  top: 79px;
+  z-index: 2;
+}
+
+.panel-input,
+.panel-select {
+  float: left;
+  padding: 5px 5px;
+  margin-top: 6px;
+  border: none;
+  font-size: 0.9em;
+  background: rgb(255, 207, 207);
+  border-bottom: 1px solid black;
+  color: #555;
+}
+
+.panel-select {
+  cursor: pointer;
+}
+
+.panel-input {
+  width: 100px;
+}
+
+.panel-input:focus,
+.panel-select:focus {
+  background: white;
+}
+
+.table-div {
+  width: 100%;
+  border-radius: 20px;
+}
+
+table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 90%;
+  border: none;
+  margin: 10px auto;
+  margin-bottom: 10px;
+}
+
+table td,
+table th {
+  border: none;
+  padding: 8px;
+}
+
+table tr:nth-child(even) {
+  background-color: #fcecec;
+}
+
+table tr:hover {
+  background-color: #ddd;
+}
+
+table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background-color: #ed1c24;
+  color: white;
+  cursor: pointer;
+}
+
+.table-edit-button {
+  color: #ed1c24;
+  cursor: pointer;
+}
+
+table tr:last-child td:last-child {
+  border-bottom-right-radius: 20px;
+}
+
+table tr:last-child td:first-child {
+  border-bottom-left-radius: 20px;
+}
+
+table tr:first-child th:last-child {
+  border-top-right-radius: 20px;
+}
+
+table tr:first-child th:first-child {
+  border-top-left-radius: 20px;
+}
+
+table tr:first-child {
+  position: sticky;
+  top: 119px;
+}
+
+/* Details views styling */
+.details-form-div {
+  padding: 40px;
+}
+
+.details-form {
+  max-width: 420px;
+  background: white;
+  text-align: left;
+  padding: 20px 40px 0 40px;
+  border-radius: 20px;
+  margin: auto;
+}
+
+.details-label {
+  color: #aaa;
+  display: inline-block;
+  margin: 25px 0 0;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.details-input,
+.details-select {
+  display: inline-block;
+  padding: 10px 6px;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.details-input:disabled {
+  background-color: white;
+}
+
+.details-input-password {
+  display: inline-block;
+  padding: 10px 4px;
+  width: 100%;
+  width: -webkit-calc(100% - 32px);
+  width: -moz-calc(100% - 32px);
+  width: calc(100% - 32px);
+  border: none;
+  border-bottom: 1px solid #ddd;
+  color: #555;
+  font-size: 0.9em;
+  margin-right: 4px;
+}
+
+.details-select {
+  cursor: pointer;
+}
+
+.details-button-div {
+  width: 100%;
+  text-align: center;
+}
+
+.add-update-button,
+.delete-button {
+  background: white;
+  border: 2px solid #ed1c24;
+  padding: 10px 20px;
+  margin: 20px;
+  color: #ed1c24;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.add-update-button:hover,
+.delete-button:hover {
+  opacity: 0.5;
+}
+
+.delete-button {
+  background: #ed1c24;
+  color: white;
+}
+
+.details-toggle-eye {
+  cursor: pointer;
+  color: #ed1c24;
+}
+
+.details-toggle-eye:hover {
+  opacity: 0.5;
+}
+
+
+/* Popups */
+.popup-ul,
+.popup-ul-server {
+  visibility: hidden;
+  position: absolute;
+  font-size: 15px;
+  color: #ffffff;
+  border-radius: 10px;
+  background: #140001;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.popup-ul {
+  right: -40px;
+  top: 30px;
+}
+
+.popup-ul-server {
+  left: 50%;
+  top: 50%;
+}
+
+.popup-ul::after,
+.popup-ul-server::after {
+  content: "";
+  position: absolute;
+  border-style: solid;
+  border-color: transparent transparent #140001 transparent;
+}
+
+.popup-ul::after {
+  top: 0;
+  left: 50%;
+  margin-top: -20px;
+  margin-left: -10px;
+  border-width: 10px;
+}
+
+.popup-ul-server::after {
+  border-color: #140001 transparent transparent transparent;
+  bottom: 0;
+  left: 50%;
+  margin-bottom: -20px;
+  margin-left: -10px;
+  border-width: 10px;
+}
+
+.popup-ul li,
+.popup-ul-server li {
+  padding: 10px;
+  margin: 10px;
+  margin-left: -30px;
+  list-style-type: none;
+  border: 1px solid #ed1c24;
+  border-radius: 10px;
+}
+
+.popup-ul li:hover,
+.popup-ul-server li:hover {
+  opacity: 0.5;
+}
+
+.show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 0.5s;
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Message boxes */
+/* Alert */
+.swal2-styled.swal2-confirm {
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+  background-color: #ed1c24 !important;
+}
+
+.swal2-styled.swal2-confirm:hover {
+  background-color: #ed1c24 !important;
+  opacity: 0.5;
+}
+
+#swal2-content {
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+}
+
+.swal2-styled.swal2-cancel {
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+  color: #ed1c24 !important;
+  background-color: white !important;
+  border: 2px solid #ed1c24 !important;
+}
+
+.swal2-styled.swal2-cancel:hover {
+  color: #ed1c24 !important;
+  background-color: white !important;
+  border: 2px solid #ed1c24 !important;
+  opacity: 0.5;
+}
+
+.swal2-title {
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+  font-size: 1.4em !important;
+}
