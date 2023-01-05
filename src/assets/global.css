@@ -90,3 +90,16 @@ img {
   font-family: Avenir, Helvetica, Arial, sans-serif !important;
   font-size: 1.4em !important;
 }
+
+.v-data-table, .table-div, .v-card, .v-dialog, .swal2-popup {
+  border-radius: 20px !important;
+}
+
+.v-toolbar {
+  border-top-left-radius: 20px !important;
+  border-top-right-radius: 20px !important;
+}
+
+.v-toolbar .mx-2 {
+  margin-right: -2px !important;
+}

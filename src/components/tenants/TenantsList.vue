@@ -103,8 +103,9 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-                <v-btn color="green darken-1" text @click="save"> Save </v-btn>
+                <v-btn color="primary" @click="close"> Cancel </v-btn>
+                <v-btn color="success" @click="save"> Save </v-btn>
+                <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -113,8 +114,8 @@
               <v-card-title class="text-h6 justify-center">Are you sure you want to delete this tenant address?</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                <v-btn color="red darken-1" text @click="deleteTenantAddressConfirm">Delete</v-btn>
+                <v-btn color="primary" @click="closeDelete">Cancel</v-btn>
+                <v-btn color="error" @click="deleteTenantAddressConfirm">Delete</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>

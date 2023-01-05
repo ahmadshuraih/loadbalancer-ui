@@ -69,7 +69,7 @@ const router = new VueRouter({
 router.beforeEach(async (to: Route, from: Route, next: NavigationGuardNext) => {
   developerToolsFunctions.enableViewSourceCodeOnBrowser(to.name !== "security");
   if (!securityConfig.isLoggedIn() && to.name !== "login") {
-    queue = { name: to.name!, params: to.params };
+    if (to.name !== 'home') queue = { name: to.name!, params: to.params };
     if (from.name !== "login") loginFunctions.logout();
   } else if (securityConfig.isLoggedIn() && from.name !== "login" && to.name === "login") {
     loginFunctions.logout();
