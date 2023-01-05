@@ -6,23 +6,11 @@ import securityConfig from "./securityConfig";
 import CryptoJS from "crypto-js";
 
 /**
- * Returns `void`.
- *
- * This function shows/hides the password fields.
- */
-function togglePassword(input: string): void {
-  const typeToSet = document.querySelector(`#${input}`)?.getAttribute("type") === "password" ? "text" : "password";
-  document.querySelector(`#${input}`)?.setAttribute("type", typeToSet);
-  document.querySelector(`#togglePassword-${input}`)?.classList.toggle("fa-eye-slash");
-}
-
-/**
  * Returns `Promise<void>`.
  *
  * This function logs the user in and redirects to home page.
  */
-async function login(event: Event, username: string, password: string): Promise<void> {
-  event.preventDefault();
+async function login(username: string, password: string): Promise<void> {
   const response = await securityWebFacade.login(username, password);
   if (response.succeed) {
     const responseAuthentication = response.auth?.["fdUasd7jsdy/&9sddsaj_asdsd"];
@@ -42,9 +30,6 @@ async function login(event: Event, username: string, password: string): Promise<
   }
 }
 
-//Disable view source code in browser?
-
-
 /**
  * Returns `void`.
  *
@@ -56,37 +41,46 @@ function logout(): void {
   toggleNavigationBar(false);
 }
 
+/**
+ * Returns `void`.
+ *
+ * This function shows/hides the navbar and the logout button when logged in/out.
+ */
 function toggleNavigationBar(show: boolean): void {
   if (show) {
-    document.getElementById('logout-btn')?.classList.remove("hide-login");
-    document.getElementById('navigation-bar')?.classList.remove("hide-login");
-    document.getElementById('nav-white-model')?.classList.remove("hide-login");
-    document.getElementById('nav-dark-model')?.classList.remove("hide-login");
-    document.getElementById('logout-btn')?.classList.add("show-login");
-    document.getElementById('navigation-bar')?.classList.add("show-login");
-    document.getElementById('nav-white-model')?.classList.add("show-login");
-    document.getElementById('nav-dark-model')?.classList.add("show-login");
-    document.getElementById('page-content')?.classList.remove("logged-out");
+    document.getElementById("logout-btn")?.classList.remove("hide-login");
+    document.getElementById("navigation-bar")?.classList.remove("hide-login");
+    document.getElementById("nav-white-model")?.classList.remove("hide-login");
+    document.getElementById("nav-dark-model")?.classList.remove("hide-login");
+    document.getElementById("logout-btn")?.classList.add("show-login");
+    document.getElementById("navigation-bar")?.classList.add("show-login");
+    document.getElementById("nav-white-model")?.classList.add("show-login");
+    document.getElementById("nav-dark-model")?.classList.add("show-login");
+    document.getElementById("page-content")?.classList.remove("logged-out");
   } else {
-    document.getElementById('logout-btn')?.classList.remove("show-login");
-    document.getElementById('navigation-bar')?.classList.remove("show-login");
-    document.getElementById('nav-white-model')?.classList.remove("show-login");
-    document.getElementById('nav-dark-model')?.classList.remove("show-login");
-    document.getElementById('logout-btn')?.classList.add("hide-login");
-    document.getElementById('navigation-bar')?.classList.add("hide-login");
-    document.getElementById('nav-white-model')?.classList.add("hide-login");
-    document.getElementById('nav-dark-model')?.classList.add("hide-login");
-    document.getElementById('page-content')?.classList.add("logged-out");
+    document.getElementById("logout-btn")?.classList.remove("show-login");
+    document.getElementById("navigation-bar")?.classList.remove("show-login");
+    document.getElementById("nav-white-model")?.classList.remove("show-login");
+    document.getElementById("nav-dark-model")?.classList.remove("show-login");
+    document.getElementById("logout-btn")?.classList.add("hide-login");
+    document.getElementById("navigation-bar")?.classList.add("hide-login");
+    document.getElementById("nav-white-model")?.classList.add("hide-login");
+    document.getElementById("nav-dark-model")?.classList.add("hide-login");
+    document.getElementById("page-content")?.classList.add("logged-out");
   }
 }
 
+/**
+ * Returns `void`.
+ *
+ * This function checks the login status and toggles the navbar and logout button.
+ */
 function checkLogin(): void {
   toggleNavigationBar(securityConfig.isLoggedIn());
 }
 
 export default {
-  togglePassword,
   login,
   logout,
-  checkLogin
+  checkLogin,
 };

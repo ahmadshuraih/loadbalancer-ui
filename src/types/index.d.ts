@@ -12,3 +12,4 @@ export type LBResponse = { succeed: boolean; message?: string; error?: string; e
 export type AuthTokens = { "fdUasd7jsdy/&9sddsaj_asdsd": string; "34as@vsdas6y/&9asd/32h^sdGJ": string; "ry*as-sdy/&9aswd/32sddv": string }; // authenticationToken, authorizationToken, key
 export type LoginResponse = { succeed: boolean; message?: string; error?: string; errorId?: string, auth?: AuthTokens; }
 export type SecurityInfo = { username: string; password: string; authenticationToken: string; authorizationToken: string; };
+export type SecurityInfoShow = { username: boolean; password: boolean; authentication: boolean; authorization: boolean; };

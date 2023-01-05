@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <div class="top-bar"><span>Load balancer</span></div>
+  <v-app id="app">
+    <div class="top-app-bar"><span>Load balancer</span></div>
     <img class="logo-img" src="./assets/logo.png" />
     <button id="logout-btn" class="logout-btn hide-login" @click="logout"><span class="fa fa-sign-out"></span> Logout</button>
     <nav id="navigation-bar" class="hide-login">
@@ -14,12 +14,11 @@
     <div id="page-content" class="page-content logged-out">
       <router-view />
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script lang="ts">
 import loginFunctions from "./functions/security/loginFunctions";
-import tenantsFunctions from "./functions/tenants/tenantsFunctions";
 
 export default {
   methods: {
@@ -27,12 +26,9 @@ export default {
       loginFunctions.logout();
     },
   },
-  created() {
-    tenantsFunctions.hidePopupWhenClickOutside();
-  },
   mounted() {
     loginFunctions.checkLogin();
-  }
+  },
 };
 </script>
 
@@ -51,16 +47,14 @@ export default {
   top: 0;
   width: 80px;
   height: 80px;
+  z-index: 1;
 }
 
-.top-bar {
+.top-app-bar {
   text-align: left;
   padding-left: 110px;
   position: fixed;
   width: 100%;
-  width: -webkit-calc(100% - 110px);
-  width: -moz-calc(100% - 110px);
-  width: calc(100% - 110px);
   height: 80px;
   background: #ed1c24;
   font-size: 30px;
@@ -70,6 +64,7 @@ export default {
   left: 0;
   line-height: 80px;
   border-bottom-right-radius: 20px;
+  z-index: 1;
 }
 
 .logout-btn {
@@ -85,6 +80,7 @@ export default {
   border: none;
   cursor: pointer;
   border-bottom-right-radius: 20px;
+  z-index: 1;
 }
 
 .logout-btn:hover {
@@ -95,7 +91,7 @@ export default {
   background: #fff6f6;
   border: none solid rgba(204, 192, 192, 0.829);
   border-radius: 20px;
-  margin-top: 120px;
+  margin-top: 110px;
   margin-left: 235px;
   margin-right: 35px;
 }
@@ -151,8 +147,7 @@ nav {
 
 nav a {
   display: block;
-  color: #ed1c24;
-  color: white;
+  color: white !important;
   padding: 14px 36px 14px 16px;
   text-decoration: none;
   font-size: 20px;

@@ -1,38 +1,64 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="details-form-div">
-    <form class="details-form">
-      <h2><span class="fa fa-sign-in"></span> Login</h2>
-      <label class="details-label">Username</label>
-      <input type="text" class="details-input" v-model="username" required />
-      <label class="details-label">Password</label>
-      <input type="password" class="details-input-password" id="password" v-model="password" required />
-      <i class="far fa-eye details-toggle-eye" id="togglePassword-password" @click="showPassword('password')"></i>
-      <div class="details-button-div">
-        <button class="delete-button" @click="login"><span class="fa fa-sign-in"></span> Login</button>
-      </div>
-    </form>
+    <v-form ref="form" lazy-validation>
+      <h2>Login</h2>
+      <v-text-field v-model="username" :rules="usernameRules" label="Username" @keyup.enter="login" required></v-text-field>
+
+      <v-text-field
+        ref="passwordfield"
+        v-model="password"
+        append-icon="mdi-eye"
+        :rules="passwordRules"
+        type="password"
+        name="password"
+        label="Password"
+        @click:append="toggle('passwordfield')"
+        @keyup.enter="login"
+        required
+      ></v-text-field>
+
+      <v-btn color="error" class="mr-4" @click="login"> Login </v-btn>
+    </v-form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import loginFunctions from "@/functions/security/loginFunctions";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   data() {
     return {
+      show: false,
       username: "",
+      usernameRules: [(v: string) => !!v || "Username is required"],
       password: "",
+      passwordRules: [(v: string) => !!v || "Password is required"],
     };
   },
   methods: {
-    showPassword: function (input: string): void {
-      loginFunctions.togglePassword(input);
+    login(): void {
+      let form: any = this.$refs.form;
+      if (form.validate()) loginFunctions.login(this.username, this.password);
     },
-    login: function (event: Event): void {
-      loginFunctions.login(event, this.username, this.password);
+    toggle(field: string): void {
+      let passwordinput: any = this.$refs[field];
+      this.show = !this.show;
+      passwordinput["appendIcon"] = this.show ? "mdi-eye-off" : "mdi-eye";
+      passwordinput["type"] = this.show ? "text" : "password";
     },
-  }
+  },
 });
 </script>
+
+<style scoped>
+.mr-4 {
+  margin-right: 0px !important;
+  margin-top: 10px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+</style>

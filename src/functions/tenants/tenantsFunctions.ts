@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AddressBook, DynamicTenant, TenantAddress } from "@/types";
-import router from "@/router";
 import tenantsWebFacade from "../webServicesFacades/tenantsWebFacade";
 import VueSimpleAlert from "vue-simple-alert";
 
@@ -41,25 +40,12 @@ async function fetchAddressBook(): Promise<void> {
 /**
  * Returns `Promise<TenantAddress[]>`.
  *
- * Get a sorted and filtered adresses list.
+ * Get a sorted adresses list.
  */
-async function sortAndFilterTenantAddresses(tenantId: string, sortField: string, sortType: string): Promise<TenantAddress[]> {
-  const filtered =
-    tenantId !== ""
-      ? syncedTenantAddresses.filter((tenantAddress: TenantAddress) => {
-          return tenantAddress.tenantId.startsWith(tenantId);
-        })
-      : syncedTenantAddresses;
-
-  if (sortType === "Asc") {
-    return filtered.sort((a: TenantAddress, b: TenantAddress) => {
-      return a[sortField as keyof TenantAddress] > b[sortField as keyof TenantAddress] ? 1 : -1;
-    });
-  } else {
-    return filtered.sort((a: TenantAddress, b: TenantAddress) => {
-      return a[sortField as keyof TenantAddress] < b[sortField as keyof TenantAddress] ? 1 : -1;
-    });
-  }
+async function sortTenantAddresses(): Promise<TenantAddress[]> {
+  return syncedTenantAddresses.sort((a: TenantAddress, b: TenantAddress) => {
+    return a.tenantId > b.tenantId ? 1 : -1;
+  });
 }
 
 /**
@@ -75,7 +61,6 @@ async function getTenantAddressByTenantId(tenantId: string): Promise<TenantAddre
   const tenant = await tenantsWebFacade.getTenantAddressByTenantId(tenantId);
 
   if (tenant.error) {
-    router.push({ name: "tenants" });
     VueSimpleAlert.alert(tenant.error);
   }
 
@@ -87,12 +72,10 @@ async function getTenantAddressByTenantId(tenantId: string): Promise<TenantAddre
  *
  * Add static or update a tenantaddress.
  */
-async function addOrUpdateTenantAddress(event: Event, tenantAddress: TenantAddress): Promise<void> {
-  event.preventDefault();
+async function addOrUpdateTenantAddress(tenantAddress: TenantAddress): Promise<void> {
   const response = await tenantsWebFacade.addOrUpdateTenantAddress(correctNumberTypes(tenantAddress));
   if (response.succeed) {
     VueSimpleAlert.alert(response.message);
-    router.push({ name: "tenants" });
   } else {
     VueSimpleAlert.alert(response.error);
   }
@@ -103,12 +86,10 @@ async function addOrUpdateTenantAddress(event: Event, tenantAddress: TenantAddre
  *
  * Add a tenantaddress dynamically.
  */
-async function addTenantAddressDynamic(event: Event, dynamicTenant: DynamicTenant): Promise<void> {
-  event.preventDefault();
+async function addTenantAddressDynamic(dynamicTenant: DynamicTenant): Promise<void> {
   const response = await tenantsWebFacade.addTenantAddressDynamic(correctNumberTypesDynamic(dynamicTenant));
   if (response.succeed) {
     VueSimpleAlert.alert(response.message);
-    router.push({ name: "tenants" });
   } else {
     VueSimpleAlert.alert(response.error);
   }
@@ -119,32 +100,13 @@ async function addTenantAddressDynamic(event: Event, dynamicTenant: DynamicTenan
  *
  * Delete a tenantaddress by tenantId.
  */
-async function deleteTenantAddressByTenantId(event: Event, tenantId: string): Promise<void> {
-  event.preventDefault();
-  VueSimpleAlert.confirm("Are you sure that you want to delete this tenant address?").then(async () => {
-    const response = await tenantsWebFacade.deleteTenantAddressByTenantId(tenantId);
-    if (response.succeed) {
-      VueSimpleAlert.alert(response.message);
-      router.push({ name: "tenants" });
-    } else {
-      VueSimpleAlert.alert(response.error);
-    }
-  });
-}
-
-/**
- * Returns `boolean`.
- *
- * Check if this object an empty TenantAddress object.
- */
-function tenantAddressIsNotEmpty(tenantAddress: TenantAddress): boolean {
-  return (
-    tenantAddress.tenantId !== "" ||
-    tenantAddress.serverProtocol !== "" ||
-    tenantAddress.serverName != "" ||
-    tenantAddress.serverPort != 0 ||
-    tenantAddress.ramReserved != 0
-  );
+async function deleteTenantAddressByTenantId(tenantId: string): Promise<void> {
+  const response = await tenantsWebFacade.deleteTenantAddressByTenantId(tenantId);
+  if (response.succeed) {
+    VueSimpleAlert.alert(response.message);
+  } else {
+    VueSimpleAlert.alert(response.error);
+  }
 }
 
 /**
@@ -169,66 +131,28 @@ function correctNumberTypesDynamic(dynamicTenant: DynamicTenant): DynamicTenant 
 }
 
 /**
- * Returns `void`.
+ * Returns `boolean`.
  *
- * This function redirect to an empty tenantdetails page.
+ * This function checks wheither the new tenant id available or not.
  */
-function showAddForm(tenantType: string): void {
-  router.push({ name: "tenantdetails", params: { tenantId: "new", tenantType } });
-}
-
-/**
- * Returns `void`.
- *
- * This function shows the popup menu of add new tenant button.
- */
-function showPopup(): void {
-  const popUpsUl = document.querySelector("#tenant-popup") as HTMLElement;
-  popUpsUl.classList.toggle("show");
-}
-
-/**
- * Returns `void`.
- *
- * This function hides the popup menus.
- */
-function hidePopupWhenClickOutside(): void {
-  document.onclick = function (event: any) {
-    const popUpsTenantUl = document.querySelector("#tenant-popup") as HTMLElement;
-    const popUpsServerUl = document.querySelector("#server-popup") as HTMLElement;
-    if (event.target.id !== "server-popup" && event.target.id !== "delete-server-btn" && popUpsServerUl) {
-      popUpsServerUl.classList.remove("show");
+function isAvailable(tenantId: string, editedIndex: number): boolean {
+  if (editedIndex == -1) {
+    for (const tenant of syncedTenantAddresses) {
+      if (tenantId === tenant.tenantId) {
+        return false;
+      }
     }
-    if (event.target.id !== "tenant-popup" && event.target.id !== "add-button" && popUpsTenantUl) {
-      popUpsTenantUl.classList.remove("show");
-    }
-  };
-}
+  }
 
-/**
- * Returns `void`.
- *
- * This function sets the appropriate sort type symbol to the appropriate table header
- */
-function setSpanSortType(sortField: string, sortType: string): void {
-  (document.querySelector(`#tenantId-span`) as HTMLElement).innerHTML = "";
-  (document.querySelector(`#serverProtocol-span`) as HTMLElement).innerHTML = "";
-  (document.querySelector(`#serverName-span`) as HTMLElement).innerHTML = "";
-  (document.querySelector(`#serverPort-span`) as HTMLElement).innerHTML = "";
-  (document.querySelector(`#ramReserved-span`) as HTMLElement).innerHTML = "";
-  (document.querySelector(`#${sortField}-span`) as HTMLElement).innerHTML = sortType === "Asc" ? "▲" : "▼";
+  return true;
 }
 
 export default {
-  sortAndFilterTenantAddresses,
+  sortTenantAddresses,
   fetchAddressBook,
   getTenantAddressByTenantId,
   addOrUpdateTenantAddress,
   addTenantAddressDynamic,
   deleteTenantAddressByTenantId,
-  tenantAddressIsNotEmpty,
-  showAddForm,
-  showPopup,
-  hidePopupWhenClickOutside,
-  setSpanSortType,
+  isAvailable
 };

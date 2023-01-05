@@ -1,75 +1,261 @@
 <template>
   <div class="table-div">
-    <h2 v-if="finalServers && finalServers.length == 1 && finalServers[0].index === ''">Loading data...</h2>
-    <table v-else-if="finalServers && finalServers.length">
-      <tr>
-        <th>Edit</th>
-        <th @click="reSortAndFilter(serverIndex, 'index', true)"><span id="index-span">▲</span> Index</th>
-        <th @click="reSortAndFilter(serverIndex, 'protocol', true)"><span id="protocol-span"></span> Protocol</th>
-        <th @click="reSortAndFilter(serverIndex, 'name', true)"><span id="name-span"></span> Name</th>
-        <th @click="reSortAndFilter(serverIndex, 'port', true)"><span id="port-span"></span> Port</th>
-        <th @click="reSortAndFilter(serverIndex, 'ramCapacity', true)"><span id="ramCapacity-span"></span> RAM capacity</th>
-        <th @click="reSortAndFilter(serverIndex, 'availableRAM', true)"><span id="availableRAM-span"></span> Available RAM</th>
-        <th @click="reSortAndFilter(serverIndex, 'totalAssignedTenants', true)"><span id="totalAssignedTenants-span"></span> Total tenants</th>
-      </tr>
-      <tr v-for="server in finalServers" :key="server.index">
-        <td>
-          <router-link :to="{ name: 'serverdetails', params: { serverIndex: server.index } }">
-            <span class="far fa-edit table-edit-button"></span>
-          </router-link>
-        </td>
-        <td>{{ server.index }}</td>
-        <td>{{ server.protocol }}</td>
-        <td>{{ server.name }}</td>
-        <td>{{ server.port }}</td>
-        <td>{{ server.ramCapacity }}</td>
-        <td>{{ server.availableRAM }}</td>
-        <td>{{ server.totalAssignedTenants }}</td>
-      </tr>
-    </table>
-    <h2 v-else>No data found</h2>
-    <br />
+    <v-data-table
+      item-key="name"
+      class="elevation-1"
+      v-if="finalServers && finalServers.length == 1 && finalServers[0].index === ''"
+      loading
+      loading-text="Loading... Please wait"
+    ></v-data-table>
+    <v-data-table
+      v-else-if="finalServers && finalServers.length"
+      fixed-header
+      :height="tableHeight"
+      :headers="headers"
+      :items="finalServers"
+      :search="search"
+      sort-by="index"
+      class="elevation-1"
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title><span class="fa fa-server"></span> Servers</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-spacer></v-spacer>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn class="mx-2" fab small color="success" v-bind="attrs" v-on="on"><v-icon dark>mdi-plus</v-icon></v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="text-h5">{{ formTitle() }}</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-form ref="form" lazy-validation>
+                    <v-row>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-select v-model="editedServer.protocol" :items="protocols" :rules="protocolRules" label="Protocol" required></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedServer.name"
+                          :rules="nameRules"
+                          label="Name"
+                          :disabled="editedIndex != -1"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedServer.port"
+                          :rules="portRules"
+                          hide-spin-buttons
+                          label="Port"
+                          :disabled="editedIndex != -1"
+                          type="number"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedServer.ramCapacity"
+                          :rules="ramCapacityRules"
+                          hide-spin-buttons
+                          label="RAM capacity"
+                          type="number"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedServer.availableRAM"
+                          :rules="availableRAMRules"
+                          hide-spin-buttons
+                          label="Available RAM"
+                          type="number"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedServer.totalAssignedTenants"
+                          :rules="totalAssignedTenantsRules"
+                          hide-spin-buttons
+                          label="Total assigned tenants"
+                          type="number"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
+                <v-btn color="green darken-1" text @click="save"> Save </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog v-model="dialogDelete" max-width="500px">
+            <v-card>
+              <v-card-title class="text-h6 justify-center">Are you sure you want to delete this server?</v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+                <v-btn color="red darken-1" text @click="deleteServerConfirm">Delete</v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon color="primary" small class="mr-2" @click="editServer(item)"> mdi-pencil </v-icon>
+        <v-menu top :offset-y="true">
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon color="error" small v-bind="attrs" v-on="on"> mdi-delete </v-icon>
+          </template>
+          <v-list color="error">
+            <v-list-item @click="deleteServer(item, true)">
+              <v-list-item-title class="white-list-item-title">With child tenants</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="deleteServer(item, false)">
+              <v-list-item-title class="white-list-item-title">Without child tenants</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+      <template v-slot:no-data>
+        <v-btn color="primary" @click="resort"> Reset </v-btn>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import serversFunctions from "@/functions/servers/serversFunctions";
+import { IndexedServer } from "@/types";
 import { defineComponent } from "vue";
 
 export default defineComponent({
   props: {
     serverIndex: {
-      required: true,
+      required: false,
       type: String,
-    },
+    }
   },
   data() {
     return {
+      search: "",
+      dialog: false,
+      dialogDelete: false,
+      editedIndex: -1,
+      editedServer: { protocol: "", name: "", port: 0, ramCapacity: 0, availableRAM: 0, totalAssignedTenants: 0, index: "" },
+      defaultServer: { protocol: "", name: "", port: 0, ramCapacity: 0, availableRAM: 0, totalAssignedTenants: 0, index: "" },
+      headers: [
+        { text: "Index", value: "index", align: " d-none" },
+        { text: "Name", value: "name" },
+        { text: "Port", value: "port" },
+        { text: "Protocol", value: "protocol" },
+        { text: "RAM capacity", value: "ramCapacity" },
+        { text: "Available RAM", value: "availableRAM" },
+        { text: "Total tenants", value: "totalAssignedTenants" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
       finalServers: [{ protocol: "", name: "", port: 0, ramCapacity: 0, availableRAM: 0, totalAssignedTenants: 0, index: "" }],
       sortField: "index",
-      sortType: "Desc",
-      startUp: true,
+      protocols: ["http:", "https:"],
+      protocolRules: [(v: string) => !!v || "Protocol is required"],
+      nameRules: [(v: string) => !!v || "Name is required"],
+      portRules: [(v: string) => !!v || "Port is required"],
+      ramCapacityRules: [(v: string) => !!v || "RAM capacity is required"],
+      availableRAMRules: [(v: string) => !!v || "Available RAM is required"],
+      totalAssignedTenantsRules: [(v: string) => !!v || "Total assigned tenants is required"],
+      withChildren: false,
+      tableHeight: `${window.innerHeight - 260}px`,
     };
   },
-  methods: {
-    fetchServers: async function (): Promise<void> {
-      await serversFunctions.fetchServers();
+  watch: {
+    dialog(val: any): void {
+      val || this.close();
     },
-    reSortAndFilter: function (serverindex: string, sortfield: string, sort: boolean): void {
-      if (sortfield === "") sortfield = this.sortField;
-      if (sort) this.sortType = this.sortType === "Asc" ? "Desc" : "Asc";
-      serversFunctions.sortAndFilterServers(serverindex, sortfield, this.sortType).then((servers): void => {
-        this.finalServers = servers;
-        this.sortField = sortfield;
-        if (!this.startUp) serversFunctions.setSpanSortType(sortfield, this.sortType);
-        this.startUp = false;
+    dialogDelete(val: any): void {
+      val || this.closeDelete();
+    },
+  },
+  methods: {
+    async fetchServers(): Promise<void> {
+      serversFunctions.fetchServers().then(async (): Promise<void> => {
+        serversFunctions.sortServers().then((servers) => {
+          this.finalServers = servers;
+        });
       });
+    },
+    resort(): void {
+      serversFunctions.sortServers().then((servers) => {
+        this.finalServers = servers;
+      });
+    },
+    formTitle(): string {
+      return this.editedIndex == -1 ? "New server" : "Edit server";
+    },
+    editServer(server: IndexedServer): void {
+      this.editedIndex = this.finalServers.indexOf(server);
+      this.editedServer = Object.assign({}, server);
+      this.dialog = true;
+    },
+    deleteServer(server: IndexedServer, withChildren: boolean): void {
+      this.editedIndex = this.finalServers.indexOf(server);
+      this.editedServer = Object.assign({}, server);
+      this.withChildren = withChildren;
+      this.dialogDelete = true;
+    },
+    deleteServerConfirm(): void {
+      serversFunctions.deleteServerByIndex(this.editedServer.index, this.withChildren).then(() => {
+        this.fetchServers();
+        this.closeDelete();
+      });
+    },
+    close(): void {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.editedServer = Object.assign({}, this.defaultServer);
+        this.editedIndex = -1;
+      });
+    },
+    closeDelete(): void {
+      this.dialogDelete = false;
+      this.$nextTick(() => {
+        this.editedServer = Object.assign({}, this.defaultServer);
+        this.editedIndex = -1;
+      });
+    },
+    save(): void {
+      let form: any = this.$refs.form;
+      if (serversFunctions.isAvailable(`${this.editedServer.name}:${this.editedServer.port}`, this.editedIndex)) {
+        if (form.validate()) {
+          serversFunctions.addOrUpdateServer(this.editedServer).then(() => {
+            this.fetchServers();
+            this.close();
+          });
+        }
+      } else {
+        this.$alert(`Server ${this.editedServer.name}:${this.editedServer.port} already exists`);
+      }
     },
   },
   created() {
-    this.fetchServers().then((): void => {
-      this.reSortAndFilter(this.serverIndex, this.sortField, true);
-    });
+    this.fetchServers();
+    if (this.serverIndex) {
+      this.search = this.serverIndex;
+    } else {
+      this.search = ""
+    }
   },
 });
 </script>

@@ -5,33 +5,27 @@ import loginFunctions from "./loginFunctions";
 import securityConfig from "./securityConfig";
 
 /**
- * Returns `void`.
+ * Returns `Promise<boolean>`.
  *
- * This function shows/hides the password fields.
+ * This function shows prompt dialog and returns if the password correct or not.
  */
-function togglePassword(input: string): void {
-  const typeToSet = document.querySelector(`#${input}`)?.getAttribute("type") === "password" ? "text" : "password";
-  if (typeToSet === "text") {
-    VueSimpleAlert.fire({
-      title: "Please enter the password to see the contents",
-      input: "password",
-      inputPlaceholder: "Enter your password",
-      inputAttributes: {
-        autocapitalize: "off",
-        autocorrect: "off",
-      },
-    }).then((p) => {
-      if (p.value === securityConfig.getPassword()) {
-        document.querySelector(`#${input}`)?.setAttribute("type", typeToSet);
-        document.querySelector(`#togglePassword-${input}`)?.classList.toggle("fa-eye-slash");
-      } else {
-        loginFunctions.logout();
-        VueSimpleAlert.alert("The entered password is not correct, you are logged out");
-      }
-    });
+async function checkPassword(): Promise<boolean> {
+  const result = await VueSimpleAlert.fire({
+    title: "Please enter the password to see the contents",
+    input: "password",
+    inputPlaceholder: "Enter your password",
+    inputAttributes: {
+      autocapitalize: "off",
+      autocorrect: "off",
+    },
+  });
+
+  if (result.value === securityConfig.getPassword()) {
+    return true;
   } else {
-    document.querySelector(`#${input}`)?.setAttribute("type", typeToSet);
-    document.querySelector(`#togglePassword-${input}`)?.classList.toggle("fa-eye-slash");
+    loginFunctions.logout();
+    VueSimpleAlert.alert("The entered password is not correct, you are logged out");
+    return false;
   }
 }
 
@@ -67,6 +61,6 @@ async function updateSecurityInfo(event: Event, securityInfo: SecurityInfo): Pro
 }
 
 export default {
-  togglePassword,
+  checkPassword,
   updateSecurityInfo,
 };
